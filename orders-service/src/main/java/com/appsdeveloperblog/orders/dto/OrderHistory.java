@@ -1,6 +1,6 @@
 package com.appsdeveloperblog.orders.dto;
 
-import com.appsdeveloperblog.core.types.OrderStatus;
+import com.appsdeveloperblog.core.type.OrderStatus;
 
 import java.sql.Timestamp;
 import java.util.UUID;

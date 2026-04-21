@@ -1,6 +1,19 @@
 server:
   port: 8080
 
+logging:
+  pattern:
+    level: "%5p [orderId=%X{orderId:-}]"
+
+app:
+  kafka:
+    order-events-topic-name: order-events
+    product-commands-topic-name: product-commands
+    product-events-topic-name: product-events
+    payment-commands-topic-name: payment-commands
+    payment-events-topic-name: payment-events
+    order-commands-topic-name: order-commands
+
 spring:
   jackson:
     deserialization:
@@ -21,3 +34,5 @@ spring:
       group-id: orders-ms
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JacksonJsonDeserializer
+      properties:
+        spring.json.trusted.packages: com.appsdeveloperblog.core.*

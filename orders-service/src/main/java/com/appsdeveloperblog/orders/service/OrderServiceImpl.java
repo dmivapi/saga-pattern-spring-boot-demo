@@ -1,17 +1,25 @@
 package com.appsdeveloperblog.orders.service;
 
 import com.appsdeveloperblog.core.dto.Order;
-import com.appsdeveloperblog.core.types.OrderStatus;
+import com.appsdeveloperblog.core.event.OrderApprovedEvent;
+import com.appsdeveloperblog.core.event.OrderCreatedEvent;
+import com.appsdeveloperblog.core.type.OrderStatus;
 import com.appsdeveloperblog.orders.dao.jpa.entity.OrderEntity;
 import com.appsdeveloperblog.orders.dao.jpa.repository.OrderRepository;
+import com.appsdeveloperblog.orders.config.properties.KafkaProperties;
 import lombok.RequiredArgsConstructor;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final KafkaProperties kafkaProperties;
 
     @Override
     public Order placeOrder(Order order) {
@@ -22,6 +30,15 @@ public class OrderServiceImpl implements OrderService {
         orderEntity.setStatus(OrderStatus.CREATED);
         orderRepository.save(orderEntity);
 
+        OrderCreatedEvent orderCreatedEvent = new OrderCreatedEvent(
+                orderEntity.getId(),
+                orderEntity.getCustomerId(),
+                orderEntity.getProductId(),
+                orderEntity.getProductQuantity()
+        );
+
+        kafkaTemplate.send(kafkaProperties.orderEventsTopicName(), orderCreatedEvent);
+
         return new Order(
                 orderEntity.getId(),
                 orderEntity.getCustomerId(),
@@ -30,4 +47,13 @@ public class OrderServiceImpl implements OrderService {
                 orderEntity.getStatus());
     }
 
+    @Override
+    public void approveOrder(UUID uuid) {
+        OrderEntity orderEntity = orderRepository.findById(uuid).orElseThrow();
+        orderEntity.setStatus(OrderStatus.APPROVED);
+        orderRepository.save(orderEntity);
+
+        OrderApprovedEvent orderApprovedEvent = new OrderApprovedEvent(uuid);
+        kafkaTemplate.send(kafkaProperties.orderEventsTopicName(), orderApprovedEvent);
+    }
 }

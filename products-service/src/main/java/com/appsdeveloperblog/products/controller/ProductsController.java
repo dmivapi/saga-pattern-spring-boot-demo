@@ -1,4 +1,4 @@
-package com.appsdeveloperblog.products.web.controller;
+package com.appsdeveloperblog.products.controller;
 
 import com.appsdeveloperblog.core.dto.Product;
 import com.appsdeveloperblog.products.dto.ProductCreationRequest;

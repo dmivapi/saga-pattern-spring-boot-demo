@@ -1,6 +1,6 @@
 package com.appsdeveloperblog.core.dto;
 
-import com.appsdeveloperblog.core.types.OrderStatus;
+import com.appsdeveloperblog.core.type.OrderStatus;
 
 import java.util.UUID;
 

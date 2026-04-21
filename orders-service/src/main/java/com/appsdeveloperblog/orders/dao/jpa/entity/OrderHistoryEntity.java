@@ -1,6 +1,6 @@
 package com.appsdeveloperblog.orders.dao.jpa.entity;
 
-import com.appsdeveloperblog.core.types.OrderStatus;
+import com.appsdeveloperblog.core.type.OrderStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

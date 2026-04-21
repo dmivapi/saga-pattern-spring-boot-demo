@@ -1,6 +1,6 @@
 package com.appsdeveloperblog.orders.service;
 
-import com.appsdeveloperblog.core.types.OrderStatus;
+import com.appsdeveloperblog.core.type.OrderStatus;
 import com.appsdeveloperblog.orders.dao.jpa.entity.OrderHistoryEntity;
 import com.appsdeveloperblog.orders.dao.jpa.repository.OrderHistoryRepository;
 import com.appsdeveloperblog.orders.dto.OrderHistory;

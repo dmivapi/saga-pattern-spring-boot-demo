@@ -1,6 +1,10 @@
 server:
   port: 8084
 
+logging:
+  pattern:
+    level: "%5p [orderId=%X{orderId:-}]"
+
 spring:
   jackson:
     deserialization:

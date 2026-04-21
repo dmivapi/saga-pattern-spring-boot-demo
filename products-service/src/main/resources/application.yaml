@@ -1,6 +1,14 @@
 server:
   port: 8081
 
+logging:
+  pattern:
+    level: "%5p [orderId=%X{orderId:-}]"
+
+app:
+  kafka:
+    product-commands-topic-name: product-commands
+    product-events-topic-name: product-events
 spring:
   jackson:
     deserialization:
