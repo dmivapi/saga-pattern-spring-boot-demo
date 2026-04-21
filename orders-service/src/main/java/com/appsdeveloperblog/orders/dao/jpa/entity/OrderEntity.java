@@ -2,9 +2,13 @@ package com.appsdeveloperblog.orders.dao.jpa.entity;
 
 import com.appsdeveloperblog.core.types.OrderStatus;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.UUID;
 
+@Getter
+@Setter
 @Table(name = "orders")
 @Entity
 public class OrderEntity {
@@ -19,44 +23,4 @@ public class OrderEntity {
     private UUID productId;
     @Column(name = "product_quantity")
     private Integer productQuantity;
-
-    public UUID getCustomerId() {
-        return customerId;
-    }
-
-    public void setCustomerId(UUID customerId) {
-        this.customerId = customerId;
-    }
-
-    public OrderStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(OrderStatus status) {
-        this.status = status;
-    }
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public UUID getProductId() {
-        return productId;
-    }
-
-    public void setProductId(UUID productId) {
-        this.productId = productId;
-    }
-
-    public Integer getProductQuantity() {
-        return productQuantity;
-    }
-
-    public void setProductQuantity(Integer productQuantity) {
-        this.productQuantity = productQuantity;
-    }
 }

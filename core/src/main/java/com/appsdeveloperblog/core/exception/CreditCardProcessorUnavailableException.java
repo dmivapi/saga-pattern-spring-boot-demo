@@ -1,4 +1,4 @@
-package com.appsdeveloperblog.core.exceptions;
+package com.appsdeveloperblog.core.exception;
 
 public class CreditCardProcessorUnavailableException extends RuntimeException {
 

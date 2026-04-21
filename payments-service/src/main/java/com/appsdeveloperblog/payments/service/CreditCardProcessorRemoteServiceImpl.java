@@ -1,35 +1,29 @@
 package com.appsdeveloperblog.payments.service;
 
 import com.appsdeveloperblog.core.dto.CreditCardProcessRequest;
-import com.appsdeveloperblog.core.exceptions.CreditCardProcessorUnavailableException;
-import org.springframework.beans.factory.annotation.Value;
+import com.appsdeveloperblog.core.exception.CreditCardProcessorUnavailableException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResourceAccessException;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
 @Service
+@RequiredArgsConstructor
 public class CreditCardProcessorRemoteServiceImpl implements CreditCardProcessorRemoteService {
-    private final RestTemplate restTemplate;
-    private final String ccpRemoteServiceUrl;
-
-
-    public CreditCardProcessorRemoteServiceImpl(
-            RestTemplate restTemplate,
-            @Value("${remote.ccp.url}") String ccpRemoteServiceUrl
-    ) {
-        this.restTemplate = restTemplate;
-        this.ccpRemoteServiceUrl = ccpRemoteServiceUrl;
-    }
-
+    private final RestClient restClient;
 
     @Override
     public void process(BigInteger cardNumber, BigDecimal paymentAmount) {
         try {
             var request = new CreditCardProcessRequest(cardNumber, paymentAmount);
-            restTemplate.postForObject(ccpRemoteServiceUrl + "/ccp/process", request, CreditCardProcessRequest.class);
+            restClient.post()
+                    .uri("/ccp/process")
+                    .body(request)
+                    .retrieve()
+                    .toBodilessEntity();
         } catch (ResourceAccessException e) {
             throw new CreditCardProcessorUnavailableException(e);
         }

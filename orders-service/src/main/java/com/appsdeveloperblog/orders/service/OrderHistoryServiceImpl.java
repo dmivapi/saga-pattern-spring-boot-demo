@@ -4,7 +4,7 @@ import com.appsdeveloperblog.core.types.OrderStatus;
 import com.appsdeveloperblog.orders.dao.jpa.entity.OrderHistoryEntity;
 import com.appsdeveloperblog.orders.dao.jpa.repository.OrderHistoryRepository;
 import com.appsdeveloperblog.orders.dto.OrderHistory;
-import org.springframework.beans.BeanUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -13,12 +13,10 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class OrderHistoryServiceImpl implements OrderHistoryService {
-    private final OrderHistoryRepository orderHistoryRepository;
 
-    public OrderHistoryServiceImpl(OrderHistoryRepository orderHistoryRepository) {
-        this.orderHistoryRepository = orderHistoryRepository;
-    }
+    private final OrderHistoryRepository orderHistoryRepository;
 
     @Override
     public void add(UUID orderId, OrderStatus orderStatus) {
@@ -32,10 +30,8 @@ public class OrderHistoryServiceImpl implements OrderHistoryService {
     @Override
     public List<OrderHistory> findByOrderId(UUID orderId) {
         var entities = orderHistoryRepository.findByOrderId(orderId);
-        return entities.stream().map(entity -> {
-            OrderHistory orderHistory = new OrderHistory();
-            BeanUtils.copyProperties(entity, orderHistory);
-            return orderHistory;
-        }).toList();
+        return entities.stream()
+                .map(e -> new OrderHistory(e.getId(), e.getOrderId(), e.getStatus(), e.getCreatedAt()))
+                .toList();
     }
 }

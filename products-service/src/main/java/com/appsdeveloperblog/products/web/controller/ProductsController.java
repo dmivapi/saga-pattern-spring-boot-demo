@@ -5,7 +5,7 @@ import com.appsdeveloperblog.products.dto.ProductCreationRequest;
 import com.appsdeveloperblog.products.dto.ProductCreationResponse;
 import com.appsdeveloperblog.products.service.ProductService;
 import jakarta.validation.Valid;
-import org.springframework.beans.BeanUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,12 +13,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/products")
+@RequiredArgsConstructor
 public class ProductsController {
     private final ProductService productService;
-
-    public ProductsController(ProductService productService) {
-        this.productService = productService;
-    }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
@@ -29,12 +26,8 @@ public class ProductsController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ProductCreationResponse save(@RequestBody @Valid ProductCreationRequest request) {
-        var product = new Product();
-        BeanUtils.copyProperties(request, product);
+        var product = new Product(null, request.getName(), request.getPrice(), request.getQuantity());
         Product result = productService.save(product);
-
-        var productCreationResponse = new ProductCreationResponse();
-        BeanUtils.copyProperties(result, productCreationResponse);
-        return productCreationResponse;
+        return new ProductCreationResponse(result.id(), result.name(), result.price(), result.quantity());
     }
 }
