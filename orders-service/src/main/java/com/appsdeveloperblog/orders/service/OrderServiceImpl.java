@@ -49,11 +49,23 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void approveOrder(UUID uuid) {
-        OrderEntity orderEntity = orderRepository.findById(uuid).orElseThrow();
-        orderEntity.setStatus(OrderStatus.APPROVED);
-        orderRepository.save(orderEntity);
+        orderRepository.findById(uuid).ifPresent(
+            orderEntity -> {
+                orderEntity.setStatus(OrderStatus.APPROVED);
+                orderRepository.save(orderEntity);
 
-        OrderApprovedEvent orderApprovedEvent = new OrderApprovedEvent(uuid);
-        kafkaTemplate.send(kafkaProperties.orderEventsTopicName(), orderApprovedEvent);
+                OrderApprovedEvent orderApprovedEvent = new OrderApprovedEvent(uuid);
+                kafkaTemplate.send(kafkaProperties.orderEventsTopicName(), orderApprovedEvent);
+            }
+        );
+    }
+
+    @Override
+    public void rejectOrder(UUID uuid) {
+        orderRepository.findById(uuid).ifPresent(
+                orderEntity -> {
+                    orderEntity.setStatus(OrderStatus.REJECTED);
+                    orderRepository.save(orderEntity);
+                });
     }
 }

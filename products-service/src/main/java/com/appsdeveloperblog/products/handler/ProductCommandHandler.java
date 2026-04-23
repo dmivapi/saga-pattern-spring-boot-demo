@@ -1,6 +1,8 @@
 package com.appsdeveloperblog.products.handler;
 
+import com.appsdeveloperblog.core.command.CancelProductReservationCommand;
 import com.appsdeveloperblog.core.command.ReserveProductCommand;
+import com.appsdeveloperblog.core.event.ProductReservationCancelledEvent;
 import com.appsdeveloperblog.core.event.ProductReservationFailedEvent;
 import com.appsdeveloperblog.core.event.ProductReservedEvent;
 import com.appsdeveloperblog.core.type.ReservationFailureReason;
@@ -31,8 +33,8 @@ public class ProductCommandHandler {
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final KafkaProperties kafkaProperties;
 
-  @KafkaHandler
-  public void handleCommand(@Payload ReserveProductCommand command) {
+    @KafkaHandler
+    public void handleCommand(@Payload ReserveProductCommand command) {
     try(var _ = MDC.putCloseable("orderId", command.orderId().toString())) {
       ReservationOutcome outcome = productService.reserve(command.productId(), command.productQuantity());
       switch (outcome) {
@@ -41,7 +43,14 @@ public class ProductCommandHandler {
         case ProductNotFound    n -> publishReservationFailed(command.orderId(), n);
       }
     }
-  }
+    }
+
+    @KafkaHandler
+    public void handleCommand(@Payload CancelProductReservationCommand command) {
+      productService.cancelReservation(command.productId(), command.productQuantity());
+
+      kafkaTemplate.send(kafkaProperties.productEventsTopicName(), new ProductReservationCancelledEvent(command.orderId(), command.productId()));
+    }
 
     private void publishReserved(UUID orderId, Reserved reserved) {
         log.info("Product reserved. orderId={}, productId={}, quantity={}", orderId, reserved.productId(), reserved.quantity());

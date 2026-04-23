@@ -9,6 +9,6 @@ import java.util.UUID;
 public interface ProductService {
     List<Product> findAll();
     ReservationOutcome reserve(UUID productId, int requestedQuantity);
-    void cancelReservation(Product productToCancel, UUID orderId);
+    void cancelReservation(UUID productId, int requestedQuantity);
     Product save(Product product);
 }
